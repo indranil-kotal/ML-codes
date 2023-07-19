@@ -1,0 +1,547 @@
+pip install numpy
+pip install matplotlib
+pip install scikit-learn
+pip install matplotlib scipy
+
+
+#1) Simple linear regressio:user input
+
+import matplotlib.pyplot as plt
+from scipy import stats
+x=[40 , 50 , 60 , 70]
+y=[6.2 , 7.2 , 9.1 , 12]
+pre = float(input("Enter the independent variable value to predict y: "))
+slope , intercept , r , p , std_err = stats.linregress(x , y)
+def starLine(x):
+    return slope * x + intercept
+my_mod = list(map(starLine , x))
+print('The predicted value at point ',pre,' is:',starLine(pre))
+plt.title('Simple ploting')
+plt.scatter(x,y)
+plt.plot(x , my_mod)
+plt.show()
+
+
+
+
+
+
+#2)Ploynomial regresssion:user input
+
+import numpy
+import matplotlib.pyplot as plt
+x=[1,2,3,5,6,7,8,9,10,12,13,14,15,16,18,19,21,22]
+y=[100,90,80,60,60,55,60,65,70,70,75,76,78,79,90,99,99,100]
+pre = float(input("Enter the independent variable value to predict y: "))
+mymodel = numpy.poly1d(numpy.polyfit(x , y , 2))
+myline = numpy.linspace(1 , 22 , 100)
+plt.scatter(x , y)
+plt.plot(myline , mymodel(myline))
+print('The predicted value at point ',pre,' is:',mymodel(pre))
+plt.show()
+
+
+
+
+
+
+
+#3)Multiple linear regression:user input
+
+import numpy as np
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
+def generate_dataset(n):
+    x = []
+    y = []
+    random_x1 = np.random.rand()
+    random_x2 = np.random.rand()
+    for i in range(n):
+        x1 = i
+        x2 = i / 2 + np.random.rand() * n
+        x.append([1, x1, x2])
+        y.append(random_x1 * x1 + random_x2 * x2 + 1)
+    return np.array(x), np.array(y)
+
+# User input for the number of data points
+n = int(input("Enter the number of data points to generate: "))
+x, y = generate_dataset(n)
+
+mpl.rcParams['legend.fontsize'] = 12
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x[:, 1], x[:, 2], y, label='y', s=5)
+ax.legend()
+ax.view_init(45, 0)
+plt.show()
+
+
+
+
+
+
+
+#4)Logistic regression :user input
+
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.array([[19, 19000], [35, 2000], [26, 43000], [27, 57000], [19, 76000],
+              [27, 58000], [27, 84000], [32, 150000], [25, 33000], [35, 65000],
+              [26, 80000], [26, 52000], [20, 86000], [32, 18000], [18, 82000],
+              [29, 80000], [47, 25000], [45, 26000], [46, 28000]])
+y = np.array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1])
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1)
+
+model = linear_model.LogisticRegression()
+p = float(input("Enter the first independent variable value: "))
+q = float(input("Enter the second independent variable value: "))
+
+model.fit(x_train, y_train)
+pre = model.predict([[p, q]])
+print("Predicted value is:", int(pre))
+
+
+h = 0.9 
+
+
+x_min, x_max = x[:, 0].min() - 1, x[:, 0].max() + 1
+y_min, y_max = x[:, 1].min() - 1, x[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+plt.contourf(xx, yy, Z, alpha=0.8)
+plt.scatter(x[:, 0], x[:, 1], c=y, edgecolors='k')
+plt.xlabel('Age')
+plt.ylabel('Income')
+plt.title('Logistic Regression Decision Boundary')
+plt.show()
+
+
+
+
+
+#5) Performance of model by polynomial reg :user input
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+X_train = np.array([[1], [2], [3], [4], [5], [6], [7]])
+Y_train = np.array([45000, 50000, 60000, 80000, 110000, 150000, 200000])
+
+degree = 2  # Specify the degree of the polynomial
+poly_features = PolynomialFeatures(degree=degree)
+X_poly_train = poly_features.fit_transform(X_train)
+
+model = LinearRegression()
+model.fit(X_poly_train, Y_train)
+Y_pred_train = model.predict(X_poly_train)
+
+mse = mean_squared_error(Y_train, Y_pred_train)
+rmse = np.sqrt(mse)
+r2 = r2_score(Y_train, Y_pred_train)
+
+print("Mean Squared Error (MSE):", mse)
+print("Root Mean Squared Error (RMSE):", rmse)
+print("R-squared (R2) Score:", r2)
+
+# User input for X values
+num_input_points = 4
+X_input = []
+for i in range(num_input_points):
+    x = float(input(f"Enter the X value for prediction {i + 1}: "))
+    X_input.append([x])
+
+# Convert the user input to a NumPy array
+X_input = np.array(X_input)
+
+# Predict the corresponding Y values for user-inputted X values
+X_input_poly = poly_features.transform(X_input)
+Y_input_pred = model.predict(X_input_poly)
+
+# Create a range of values for prediction
+X_range = np.arange(0, 8, 0.1).reshape(-1, 1)
+X_range_poly = poly_features.transform(X_range)
+Y_range_pred = model.predict(X_range_poly)
+
+# Plot the data points and the fitted polynomial curve
+plt.scatter(X_train, Y_train, label='Data')
+plt.plot(X_range, Y_range_pred, color='r', label='Fitted Polynomial (Degree {})'.format(degree))
+plt.scatter(X_input, Y_input_pred, color='g', label='User Input')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.title('Polynomial Regression with User Input')
+plt.grid(True)
+plt.show()
+
+
+
+
+
+
+
+
+6)Knn algo: user input
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Training data
+X_train = np.array([[-2.62484591, 8.71318243], [3.53354386, 0.77696306],
+                    [-3.6601912, 9.38998415], [4.73163961, -0.01439923],
+                    [4.6040528, 3.53781334], [-4.23411546, 8.4519986],
+                    [-0.92998481, 9.78172086], [4.97114227, 2.94871481]])
+y_train = np.array([0, 1, 0, 1, 1, 0, 0, 1])
+
+# Get user input for test data
+num_test_points = 4
+X_test = []
+for i in range(num_test_points):
+    x = float(input(f"Enter the X coordinate for test point {i + 1}: "))
+    y = float(input(f"Enter the Y coordinate for test point {i + 1}: "))
+    X_test.append([x, y])
+
+# Convert the test data to a NumPy array
+X_test = np.array(X_test)
+y_test = np.array([1, 1, 1, 1])  # Assuming class labels for the test points (e.g., all are 1)
+
+# Create the KNN classifier
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+
+# Predict class labels for the meshgrid
+h = 0.8  # Step size in the meshgrid
+x_min, x_max = -6, 6
+y_min, y_max = -1, 11
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+# Plot the decision boundary and the data points
+plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.Paired)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=plt.cm.Paired)
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, marker='x', cmap=plt.cm.Paired)
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('K-Nearest Neighbors (KNN) Decision Boundary')
+plt.show()
+
+
+
+
+
+
+
+
+#7)MULTIPLE LINEAR REGRESSION Score >95%
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+# Get user input for the number of samples and random state
+num_samples = int(input("Enter the number of samples: "))
+random_state = int(input("Enter the random state: "))
+
+# Generate random data for demonstration
+np.random.seed(random_state)
+
+# Assume there are three features: feature1, feature2, and feature3
+feature1 = np.random.rand(num_samples)
+feature2 = np.random.rand(num_samples)
+feature3 = np.random.rand(num_samples)
+
+# Let's create a target variable 'price' based on the features
+# In this example, the price will be a linear combination of the features with some noise
+price = 2.5 * feature1 + 1.8 * feature2 + 3.2 * feature3 + np.random.randn(num_samples)
+
+# Create a DataFrame with the data
+data = pd.DataFrame({'feature1': feature1, 'feature2': feature2, 'feature3': feature3, 'price': price})
+
+# Separate features (X) and target (y)
+X = data.drop(columns=['price'])
+y = data['price']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_state)
+
+# Create and fit the linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions and calculate the R-squared score
+y_pred = model.predict(X_test)
+score = r2_score(y_test, y_pred)
+print("R-squared score:", score)
+
+# Check if the score is greater than 95%
+if score > 0.95:
+    print("Achieved score greater than 95%!")
+else:
+    print("Score is less than 95%. Try different features or consider other models.")
+
+# Visualize the actual vs. predicted values
+plt.scatter(y_test, y_pred, alpha=0.7)
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=2)  # Diagonal line
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('Actual vs. Predicted Prices')
+plt.show()
+
+
+
+
+
+
+#8) hOUSE PRICE ACCORDING TO THE SIZE.
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# Sample dataset (You can replace this with your own dataset)
+data = {
+    'Area': [1200, 1500, 1800, 2200, 2500],
+    'Price': [300000, 350000, 400000, 450000, 500000]
+}
+
+# Convert the data dictionary into a DataFrame
+df = pd.DataFrame(data)
+
+# Separate features (Area) and target (Price)
+X = df[['Area']]
+y = df['Price']
+
+# Get user input for the area of the house to predict its price
+user_input_area = float(input("Enter the area of the house (in square feet): "))
+
+# Train the linear regression model
+model = LinearRegression()
+model.fit(X, y)
+
+# Predict the price for the given house size
+predicted_price = model.predict([[user_input_area]])
+print("Predicted price for the house with an area of {} sq.ft: ${:,.2f}".format(user_input_area, predicted_price[0]))
+
+# Visualize the dataset and the regression line
+plt.scatter(X, y, label='Data points', color='blue')
+plt.plot(X, model.predict(X), label='Linear Regression', color='red')
+plt.xlabel('Area (sq.ft)')
+plt.ylabel('Price ($)')
+plt.title('House Price Prediction based on Area')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+#9)MATRIX ALL OPERATION (VECTORIZED)
+
+import numpy as np
+
+# Get user input for matrix dimensions
+rows_a = int(input("Enter the number of rows for matrix A: "))
+cols_a = int(input("Enter the number of columns for matrix A: "))
+rows_b = int(input("Enter the number of rows for matrix B: "))
+cols_b = int(input("Enter the number of columns for matrix B: "))
+
+# Function to get user input for a matrix
+def get_matrix_input(rows, cols):
+    matrix = []
+    print(f"Enter {rows} rows with {cols} space-separated values each:")
+    for _ in range(rows):
+        row = list(map(float, input().split()))
+        matrix.append(row)
+    return np.array(matrix)
+
+# Get user input for matrices A and B
+matrix_A = get_matrix_input(rows_a, cols_a)
+matrix_B = get_matrix_input(rows_b, cols_b)
+
+# Transpose of a matrix
+transpose_A = np.transpose(matrix_A)
+transpose_B = np.transpose(matrix_B)
+
+# Addition, subtraction, and multiplication of two matrices
+addition_result = matrix_A + matrix_B
+subtraction_result = matrix_A - matrix_B
+multiplication_result = np.dot(matrix_A, matrix_B)
+
+# Display the results
+print("\nMatrix A:")
+print(matrix_A)
+print("\nMatrix B:")
+print(matrix_B)
+print("\nTranspose of Matrix A:")
+print(transpose_A)
+print("\nTranspose of Matrix B:")
+print(transpose_B)
+print("\nMatrix Addition (A + B):")
+print(addition_result)
+print("\nMatrix Subtraction (A - B):")
+print(subtraction_result)
+print("\nMatrix Multiplication (A * B):")
+print(multiplication_result)
+
+
+
+
+
+
+#10)MATRIX ALL OPERATION (BASIC)
+
+import numpy as np
+
+# Get user input for matrix dimensions
+rows_a = int(input("Enter the number of rows for matrix A: "))
+cols_a = int(input("Enter the number of columns for matrix A: "))
+rows_b = int(input("Enter the number of rows for matrix B: "))
+cols_b = int(input("Enter the number of columns for matrix B: "))
+
+# Function to get user input for a matrix
+def get_matrix_input(rows, cols):
+    matrix = []
+    print(f"Enter {rows} rows with {cols} space-separated values each:")
+    for _ in range(rows):
+        row = list(map(float, input().split()))
+        matrix.append(row)
+    return np.array(matrix)
+
+# Get user input for matrices A and B
+matrix_A = get_matrix_input(rows_a, cols_a)
+matrix_B = get_matrix_input(rows_b, cols_b)
+
+# Display matrices A and B
+print("\nMatrix A:")
+print(matrix_A)
+print("\nMatrix B:")
+print(matrix_B)
+
+# Matrix Addition
+addition_result = matrix_A + matrix_B
+print("\nMatrix Addition (A + B):")
+print(addition_result)
+
+# Matrix Subtraction
+subtraction_result = matrix_A - matrix_B
+print("\nMatrix Subtraction (A - B):")
+print(subtraction_result)
+
+# Matrix Multiplication
+multiplication_result = np.dot(matrix_A, matrix_B)
+print("\nMatrix Multiplication (A * B):")
+print(multiplication_result)
+
+# Display specific rows and columns of matrix A
+row_num = int(input("\nEnter the row number of matrix A you want to display: "))
+column_num = int(input("Enter the column number of matrix A you want to display: "))
+print(f"\nRow {row_num} of Matrix A:")
+print(matrix_A[row_num - 1, :])  # Row indices are 0-based in NumPy
+print(f"\nColumn {column_num} of Matrix A:")
+print(matrix_A[:, column_num - 1])  # Column indices are 0-based in NumPy
+
+
+
+
+
+#11)PLOTS ON HISTOGRAMS AND SIGN AND COSIGN FROM A MATRIX
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Get user input for the number of data points for the histogram
+num_data_points = int(input("Enter the number of data points for the histogram: "))
+
+# Generate random data for the histogram
+data = np.random.normal(loc=0, scale=1, size=num_data_points)
+
+# Get user input for the number of points for the sine and cosine functions
+num_points = int(input("Enter the number of points for the sine and cosine functions: "))
+
+# Generate data for the sine and cosine functions
+x = np.linspace(0, 2 * np.pi, num_points)
+sin_data = np.sin(x)
+cos_data = np.cos(x)
+
+# Create a histogram
+plt.figure(figsize=(8, 6))
+plt.hist(data, bins=30, color='blue', alpha=0.7)
+plt.xlabel('Values')
+plt.ylabel('Frequency')
+plt.title('Histogram of Random Data')
+plt.grid(True)
+plt.show()
+
+# Plot the sine and cosine functions
+plt.figure(figsize=(8, 6))
+plt.plot(x, sin_data, label='sin(x)', color='red', linewidth=2)
+plt.plot(x, cos_data, label='cos(x)', color='blue', linewidth=2)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Sine and Cosine Functions')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+
+
+
+
+
+#12)bASIC mATHEMATICS OPERATIONS
+
+# Get user input for two numbers
+num1 = float(input("Enter the first number: "))
+num2 = float(input("Enter the second number: "))
+
+# Perform elementary mathematical operations
+addition_result = num1 + num2
+subtraction_result = num1 - num2
+multiplication_result = num1 * num2
+
+# Check if num2 is not zero for division and exponentiation
+if num2 != 0:
+    division_result = num1 / num2
+    exponentiation_result = num1 ** num2
+else:
+    division_result = None
+    exponentiation_result = None
+    print("Error: Cannot divide by zero or raise zero to the power of zero.")
+
+# Display the results
+print("\nResults:")
+print(f"{num1} + {num2} = {addition_result}")
+print(f"{num1} - {num2} = {subtraction_result}")
+print(f"{num1} * {num2} = {multiplication_result}")
+
+if division_result is not None:
+    print(f"{num1} / {num2} = {division_result}")
+
+if exponentiation_result is not None:
+    print(f"{num1} ^ {num2} = {exponentiation_result}")
+
+
+
+
+#13)
